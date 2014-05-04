@@ -13,23 +13,31 @@ events {
 }
 
 http {
+    server_tokens {{ nginx.get('server_tokens', 'on') }};
+
     include /etc/nginx/mime.types;
     default_type  application/octet-stream;
-    log_format main '$scheme://$host:$server_port$uri$is_args$args $remote_addr:$remote_user "$request" $request_time $request_length:$bytes_sent $status "$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+
+    log_format main '{{ nginx.get('log_format', '$scheme://$host:$server_port$uri$is_args$args $remote_addr:$remote_user "$request" $request_time $request_length:$bytes_sent $status "$http_referer" "$http_user_agent" "$http_x_forwarded_for"') }}';
+
     access_log /var/log/nginx/access.fifo main;
-    sendfile {{ nginx.get('sendfile', 'on') }};
-    #tcp_nopush on;
+
     keepalive_timeout {{ nginx.get('keepalive_timeout', 65) }};
+    sendfile {{ nginx.get('sendfile', 'on') }};
+    tcp_nopush {{ nginx.get('tcp_nopush', 'off') }};
+    tcp_nodelay {{ nginx.get('tcp_nodelay', 'on') }};
+
     server_names_hash_bucket_size {{ nginx.get('server_names_hash_bucket_size', 128) }};
     server_names_hash_max_size {{ nginx.get('server_names_hash_max_size', 1024) }};
     types_hash_max_size {{ nginx.get('types_hash_max_size', 8192) }};
 
     gzip {{ nginx.get('gzip', 'on') }};
-    gzip_vary {{ nginx.get('gzip_vary', 'on') }};
-    gzip_proxied {{ nginx.get('gzip_proxied', 'any') }};
-    gzip_comp_level {{ nginx.get('gzip_comp_level', 6) }};
-    gzip_buffers {{ nginx.get('gzip_buffers', '16 8k') }};
     gzip_http_version {{ nginx.get('gzip_http_version', '1.1') }};
+    gzip_comp_level {{ nginx.get('gzip_comp_level', 6) }};
+    gzip_min_length {{ nginx.get('gzip_min_length', 20) }};
+    gzip_proxied {{ nginx.get('gzip_proxied', 'any') }};
+    gzip_vary {{ nginx.get('gzip_vary', 'on') }};
+    gzip_buffers {{ nginx.get('gzip_buffers', '16 8k') }};
     gzip_types {{ nginx.get('gzip_types', ['text/plain', 'text/css', 'application/json', 'application/x-javascript', 'text/xml', 'application/xml', 'application/xml+rss', 'text/javascript'])|join(' ') }};
 
     # turn on nginx_status on localhost
