@@ -1,0 +1,37 @@
+{# Mostly from H5BP's nginx config -#}
+{% set pget = salt['pillar.get'] -%}
+{% set kernel = grains.get('kernel') -%}
+server {
+    listen {% block port %}80{% endblock %}
+        {%- if kernel == 'Linux' %}     deferred
+        {%- elif kernel == 'FreeBSD' %} accept_filter=httpready
+        {%- endif -%}                   ;
+
+    # The host name to respond to
+    server_name {% block server_name %}{{ grains.get('fqdn') }}{% endblock %};
+
+    # Path for static files
+    root {% block root %}/var/www/html{% endblock %};
+
+    # Specify a charset
+    charset utf-8;
+
+    # Custom 404 page
+    error_page 404 {% block path_404 %}/404.html{% endblock %};
+
+    {% if pget('nginx:cache_file_descriptors', false) -%}
+        {% include 'h5bp-nginx/h5bp/directive-only/cache-file-descriptors.conf' -%}
+    {% endif -%}
+    {% include 'h5bp-nginx/h5bp/directive-only/no-transform.conf' -%}
+    {% include 'h5bp-nginx/h5bp/directive-only/x-ua-compatible.conf' -%}
+    {% if pget('nginx:filename_cache_busting', false) -%}
+        {% include 'h5bp-nginx/h5bp/location/cache-busting.conf' -%}
+    {% endif -%}
+    {% include 'h5bp-nginx/h5bp/location/expires.conf' -%}
+    {% if pget('nginx:cross_domain_fonts', false) -%}
+        {% include 'h5bp-nginx/h5bp/location/cross-domain-fonts.conf' -%}
+    {% endif -%}
+    {% include 'h5bp-nginx/h5bp/location/protect-system-files.conf' -%}
+
+    {% block footer %}{% endblock %}
+}

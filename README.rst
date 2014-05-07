@@ -50,3 +50,32 @@ Installs nginx via the source files.
 ---------------
 
 Installs apache utils, and configures nginx users specified in the pillar.
+
+Available templates
+===================
+
+Includes partials.
+
+.. contents::
+    :local:
+
+``nginx/templates/config.site.jinja``
+-------------------------------------
+
+An extendible site-specific nginx config file that is meant to go into
+``/etc/nginx/sites-*/``. Blocks available to be overwritten:
+
+``port``
+    Defaults to ``80``.
+
+``server_name``
+    Defaults to the FQDN of the minion, via the grain value.
+
+``root``
+    The absolute path to the document root. Defaults to ``/var/www/html``.
+
+``path_404``
+    The path to the 404 Not Found page. Defaults to ``/404.html``.
+
+``footer``
+    Custom configuration directives.
