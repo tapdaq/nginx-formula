@@ -40,6 +40,7 @@ http {
     gzip_buffers {{ nginx.get('gzip_buffers', '16 8k') }};
     gzip_types {{ nginx.get('gzip_types', ['text/plain', 'text/css', 'application/json', 'application/x-javascript', 'text/xml', 'application/xml', 'application/xml+rss', 'text/javascript'])|join(' ') }};
 
+{% if nginx.get('status_endpoint', true) -%}
     # turn on nginx_status on localhost
     server {
         listen 127.0.0.1:80;
@@ -51,6 +52,7 @@ http {
             deny all;
         }
     }
+{% endif -%}
 {% if pillar['nginx'] is defined -%}
 {% if pillar['nginx']['redirect_numeric_ip']|default(False) %}
     server {
