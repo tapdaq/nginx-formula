@@ -35,9 +35,13 @@ nginx-old-init-disable:
       - file: nginx-old-init
 {% endif %}
 
+{% set nginx_fromrepo = pillar.get('nginx', {}).get('fromrepo', false) -%}
 nginx:
   pkg.installed:
     - name: nginx
+{% if nginx_fromrepo %}
+    - fromrepo: {{ nginx_fromrepo }}
+{% endif %}
 {% if use_upstart %}
   file:
     - managed
