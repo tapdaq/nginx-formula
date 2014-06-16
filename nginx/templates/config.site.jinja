@@ -27,7 +27,9 @@ server {
     {% if pget('nginx:filename_cache_busting', false) -%}
         {% include 'h5bp-nginx/h5bp/location/cache-busting.conf' -%}
     {% endif -%}
-    {% include 'h5bp-nginx/h5bp/location/expires.conf' -%}
+    {% if pget('nginx:expires', true) -%}
+        {% include 'h5bp-nginx/h5bp/location/expires.conf' -%}
+    {% endif -%}
     {% if pget('nginx:cross_domain_fonts', false) -%}
         {% include 'h5bp-nginx/h5bp/location/cross-domain-fonts.conf' -%}
     {% endif -%}
