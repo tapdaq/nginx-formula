@@ -1,11 +1,13 @@
 {# Mostly from H5BP's nginx config -#}
 {% set pget = salt['pillar.get'] -%}
-{% set kernel = grains.get('kernel') -%}
 server {
     listen {% block port %}80{% endblock %}
-        {%- if kernel == 'Linux' %}     deferred
-        {%- elif kernel == 'FreeBSD' %} accept_filter=httpready
-        {%- endif -%}                   ;
+        {%- if pget('nginx:tcp_optimize_accept', true) -%}
+            {% set kernel = grains.get('kernel') -%}
+            {%- if kernel == 'Linux' %}     deferred
+            {%- elif kernel == 'FreeBSD' %} accept_filter=httpready
+            {%- endif %}
+        {%- endif -%}                       ;
 
     # The host name to respond to
     server_name {% block server_name %}{{ grains.get('fqdn') }}{% endblock %};
